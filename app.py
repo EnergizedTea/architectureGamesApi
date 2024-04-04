@@ -19,8 +19,8 @@ class Game(db.Model):
     release_year = db.Column(db.String  (4), nullable=False)
     platform = db.Column(db.String(120), nullable=False)
     rating = db.Column(db.String(1), nullable=False)
-
-
+    picture = db.Column(db.String(2048), nullable=False)
+    
     def show(self):
         return {
             'id': self.id,
@@ -28,7 +28,8 @@ class Game(db.Model):
             'developer': self.developer,
             'release' : self.release_year,
             'platform' : self.platform,
-            'rating' : self.rating
+            'rating' : self.rating,
+            'picture' : self.picture
         }
     
 
@@ -50,6 +51,8 @@ def addGame():
         abort(400, error = 'Missing platform in request')
     if 'rating' not in request.json:
         abort(400, error = 'Missing rating in request')
+    if 'picture' not in request.json:
+        abort(400, error = 'Missing picture in request')
     
     game = Game(title=(request.json['title']), developer=(request.json['developer']), status=False)
     db.session.add(game)
@@ -72,6 +75,8 @@ def addGameWithId(id):
             abort(400, error = 'Missing platform in request')
         if 'rating' not in request.json:
             abort(400, error = 'Missing rating in request')
+        if 'picture' not in request.json:
+            abort(400, error = 'Missing picture in request')
         
         game = Game(id=id,title=(request.json['title']), developer=(request.json['developer']), status=False)
         db.session.add(game)
@@ -100,6 +105,8 @@ def updateGame(id):
         game.platform = request.json['platform']
     if 'rating'in request.json:
         game.rating = request.json['rating']
+    if 'picture'in request.json:
+        game.picture = request.json['picture']
         
     db.session.commit()
     return jsonify('game has been changed has been succesfully changed'), 200
