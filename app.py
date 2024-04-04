@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
 db = SQLAlchemy(app)
@@ -16,7 +16,7 @@ class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(80), nullable=False)
     developer = db.Column(db.String(60), nullable=False)
-    release = db.Column(db.String(4), nullable=False)
+    release_year = db.Column(db.String(4), nullable=False)
     platform = db.Column(db.String(120), nullable=False)
     rating = db.Column(db.String(1), nullable=False)
     picture = db.Column(db.String(2048), nullable=False)
@@ -26,12 +26,11 @@ class Game(db.Model):
             'id': self.id,
             'title': self.title,
             'developer': self.developer,
-            'release' : self.release,
-            'platform' : self.platform,
-            'rating' : self.rating,
-            'picture' : self.picture
+            'release': self.release_year,
+            'platform': self.platform,
+            'rating': self.rating,
+            'picture': self.picture
         }
-    
 
 @app.route('/')
 def home():
@@ -40,59 +39,24 @@ def home():
 @app.route(BASE_URL + 'create', methods=['POST'])
 def addGame():
     if not request.json:
-        abort(400, error = 'Missing body in request')
-    if 'title' not in request.json:
-        abort(400, error = 'Missing title in request')
-    if 'developer' not in request.json:
-        abort(400, error = 'Missing developer in request')
-    if 'release' not in request.json:
-        abort(400, error = 'Missing release in request')
-    if 'platform' not in request.json:
-        abort(400, error = 'Missing platform in request')
-    if 'rating' not in request.json:
-        abort(400, error = 'Missing rating in request')
-    if 'picture' not in request.json:
-        abort(400, error = 'Missing picture in request')
-    
-    game = Game(title=request.json['title'],
-            developer=request.json['developer'],
-            release=request.json['release'],
-            platform=request.json['platform'],
-            rating=request.json['rating'],
-            picture=request.json['picture'])
+        abort(400, description='Missing body in request')
 
-    
+    required_fields = ['title', 'developer', 'release_year', 'platform', 'rating', 'picture']
+    for field in required_fields:
+        if field not in request.json:
+            abort(400, description=f'Missing {field} in request')
+
+    game = Game(title=request.json['title'],
+                developer=request.json['developer'],
+                release_year=request.json['release_year'],
+                platform=request.json['platform'],
+                rating=request.json['rating'],
+                picture=request.json['picture'])
+
     db.session.add(game)
     db.session.commit()
-    
-    return jsonify({'Created game succesfully!': game.show()}), 201
 
-@app.route(BASE_URL + 'create/<int:id>', methods=['POST'])
-def addGameWithId(id):
-    if game.query.get(id) is None:
-        if not request.json:
-            abort(400, error = 'Missing body in request')
-        if 'title' not in request.json:
-            abort(400, error = 'Missing title in request')
-        if 'developer' not in request.json:
-            abort(400, error = 'Missing developer in request')
-        if 'release' not in request.json:
-            abort(400, error = 'Missing release in request')
-        if 'platform' not in request.json:
-            abort(400, error = 'Missing platform in request')
-        if 'rating' not in request.json:
-            abort(400, error = 'Missing rating in request')
-        if 'picture' not in request.json:
-            abort(400, error = 'Missing picture in request')
-        
-        game = Game(title=(request.json['title']), developer=(request.json['developer']), release=(request.json['release']), platform=(request.json['platform']), rating=(request.json['rating']), picture=(request.json['picture']))
-        
-        db.session.add(game)
-        db.session.commit()
-        
-        return jsonify({'Created game succesfully!': game.show()}), 201
-    else:
-        return jsonify({'Id already in existace'}), 409
+    return jsonify({'message': 'Game added successfully', 'game': game.show()}), 201
 
 @app.route(BASE_URL + 'change/<int:id>', methods=['PATCH'])
 def updateGame(id):
@@ -133,7 +97,7 @@ def getGame(id):
 
 @app.route(BASE_URL + 'games/<int:id>', methods=['DELETE'])
 def deleteGame(id):
-    game = game.query.get(id)
+    game = Game.query.get(id)
     if game is None:
         abort(404, error="game not found!")
     db.session.delete(game)
