@@ -54,7 +54,7 @@ def addGame():
     if 'picture' not in request.json:
         abort(400, error = 'Missing picture in request')
     
-    game = Game(title=(request.json['title']), developer=(request.json['developer']), status=False)
+    game = Game(title=(request.json['title']), developer=(request.json['developer']), release=(request.json['release']), platform=(request.json['platform']), rating=(request.json['rating']), picture=(request.json['picture']), status=False)
     db.session.add(game)
     db.session.commit()
     
@@ -78,7 +78,8 @@ def addGameWithId(id):
         if 'picture' not in request.json:
             abort(400, error = 'Missing picture in request')
         
-        game = Game(id=id,title=(request.json['title']), developer=(request.json['developer']), status=False)
+        game = Game(title=(request.json['title']), developer=(request.json['developer']), release=(request.json['release']), platform=(request.json['platform']), rating=(request.json['rating']), picture=(request.json['picture']), status=False)
+        
         db.session.add(game)
         db.session.commit()
         

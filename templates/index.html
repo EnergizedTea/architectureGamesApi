@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Bienvendio a mi pagina</h1>
+
+    {% if peliculas %}
+        <h3>aqui van las peliculas</h3>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>TITULO</th>
+                <th>DIRECTOR</th>
+                <th>ACTORES</th>
+                <th>AÑO DE LANZAMIENTO</th>
+                <th>GENERO</th>
+            </tr>
+            {% for pelicula in peliculas %}
+                <tr>
+                    <td>{{ pelicula[0] }}</td>
+                    <td>{{ pelicula[1] }}</td>
+                    <td>{{ pelicula[2] }}</td>
+                    <td>{{ pelicula[3] }}</td>
+                    <td>{{ pelicula[4] }}</td>
+                    <td>{{ pelicula[5] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h3>No Hay Peliculas</h3>
+    {% endif %}
+
+    {% if generos %}
+        <h3>aqui van los generos</h3>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>GENERO</th>
+            </tr>
+            {% for genero in generos %}
+                <tr>
+                    <td>{{ genero[0] }}</td>
+                    <td>{{ genero[1] }}</td>
+                    <td>{{ genero[2] }}</td>
+                    <td>{{ genero[3] }}</td>
+                    <td>{{ genero[4] }}</td>
+                    <td>{{ genero[5] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h3>No Hay Peliculas</h3>
+    {% endif %}
+</body>
+</html>
