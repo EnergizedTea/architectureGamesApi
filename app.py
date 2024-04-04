@@ -16,7 +16,7 @@ class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(80), nullable=False)
     developer = db.Column(db.String(60), nullable=False)
-    release_year = db.Column(db.String  (4), nullable=False)
+    release = db.Column(db.String(4), nullable=False)
     platform = db.Column(db.String(120), nullable=False)
     rating = db.Column(db.String(1), nullable=False)
     picture = db.Column(db.String(2048), nullable=False)
@@ -26,7 +26,7 @@ class Game(db.Model):
             'id': self.id,
             'title': self.title,
             'developer': self.developer,
-            'release' : self.release_year,
+            'release' : self.release,
             'platform' : self.platform,
             'rating' : self.rating,
             'picture' : self.picture
@@ -54,7 +54,14 @@ def addGame():
     if 'picture' not in request.json:
         abort(400, error = 'Missing picture in request')
     
-    game = Game(title=(request.json['title']), developer=(request.json['developer']), release=(request.json['release']), platform=(request.json['platform']), rating=(request.json['rating']), picture=(request.json['picture']))
+    game = Game(title=request.json['title'],
+            developer=request.json['developer'],
+            release=request.json['release'],
+            platform=request.json['platform'],
+            rating=request.json['rating'],
+            picture=request.json['picture'])
+
+    
     db.session.add(game)
     db.session.commit()
     
